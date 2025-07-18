@@ -22,7 +22,7 @@ python alpha_variant_scan.py \
 
 ## 开始之前的调试 Before you start
 
-**Install Package:** 
+**Install Package:** alphagenome, pandas, numpy, matplotlib
 ```
 pip install alphagenome
 ```
