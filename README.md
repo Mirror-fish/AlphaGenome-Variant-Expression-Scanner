@@ -1,55 +1,13 @@
 # Alphagenome----Variant-Effect-Screening-Method
-This is a established tool using Alphagenome to screen the possible effects of variants to expression patterns.
-## 0. 快速摘要 / Quick Summary / Resumen breve / 概要
+This is an established tool using Alphagenome to screen the possible effects of variants on expression patterns.
+
+## 摘要  Summary 
 
 **中文:** 输入一个含变异列表的文件 (TSV/CSV/VCF)。对指定 UBERON 器官调用 AlphaGenome DNA 模型的 RNA 预测，在变异中心 ±`scan_span` bp 区域内，用 `window_size` 滑窗计算 ALT/REF−1；根据 `threshold`、`min_length`、`merge_distance` 判定显著表达改变区段；输出结果汇总表 + (可选) 图像。
 
----
+**English:** Input a file containing a list of variants (TSV/CSV/VCF). Perform RNA prediction using the AlphaGenome DNA model for the specified UBERON organ, within the ±`scan_span` bp region around the variant center. Use a sliding window of size `window_size` to calculate ALT/REF−1. Significant expression change segments are determined based on `threshold`, `min_length`, and `merge_distance`. The results are output in a summary table + (optional) images.
 
-## 1. 可配置参数（CLI 选项）
-
-| 参数                  | 类型/默认                              | 含义                                               | 备注               |      |            |
-| ------------------- | ---------------------------------- | ------------------------------------------------ | ---------------- | ---- | ---------- |
-| `--variants`        | path                               | 变异表 TSV/CSV/VCF。需含 CHROM, POS(1‑based), REF, ALT | 必填               |      |            |
-| `--organs`          | list                               | UBERON 代码；缺省使用内置示例列表                             | 可多选              |      |            |
-| `--threshold`       | float=0.5                          | 判定显著：                                            | ALT/REF−1        | > 阈值 | 越低越敏感但假阳性↑ |
-| `--min-length`      | int=1000                           | 区段长度阈值 (bp, 以窗口计后换算)                             | 去噪               |      |            |
-| `--merge-distance`  | int=300                            | 相邻候选区段最大合并间隔 (bp)                                | 填补小空洞            |      |            |
-| `--window-size`     | int=100                            | 滑窗长度 (bp)                                        | 平滑度 vs 分辨率       |      |            |
-| `--scan-span`       | int=50000                          | 扫描变异中心两侧 bp 数                                    | 扫描范围             |      |            |
-| `--plot-non-sig`    | flag                               | 无显著结果时仍绘图                                        | 默认不绘             |      |            |
-| `--scan-all-tracks` | flag                               | 扫描所有轨道 (默认仅汇总，无此 flag 时仍扫描全部；保留向后兼容)             | 建议开              |      |            |
-| `--epsilon`         | float=1e-8                         | REF 加小值避免除零                                      | 数值稳定性            |      |            |
-| `--output-table`    | str=alphagenome\_scan\_results.csv | 汇总表路径 (扩展名决定格式)                                  | 支持 csv/tsv/xlsx  |      |            |
-| `--output-dir`      | str=alphagenome\_scan\_plots       | 绘图输出目录                                           | 自动创建             |      |            |
-| `--api-key`         | str                                | AlphaGenome API key                              | 可留空自动取 env/colab |      |            |
-| `--gtf`             | str=GENCODE v46 feather            | 注释文件                                             | 可自定义             |      |            |
-| `--chrom-col` 等     | str                                | 输入列名映射                                           | 兼容多源文件           |      |            |
-
-
-## 2. 输出结果表字段说明
-
-生成 **track 级细粒度表** (`--output-table`)；并自动生成一个 **variant×organ 汇总表**（同目录，文件名追加 `_variant_organ_summary.*`）。
-
-**细粒度表列：**
-
-- `chrom`, `pos`, `ref`, `alt`
-- `ontology` (UBERON)
-- `track_name`
-- `is_significant` (bool)
-- `n_regions` (本轨道显著区段数)
-- `region_index` (0..n-1；若无显著则-1)
-- `rel_start_bp`, `rel_end_bp` (相对变异位置，bp；负=上游)
-- `abs_start_bp`, `abs_end_bp` (hg38 绝对坐标；近似 = pos + rel)
-- `mean_score`, `max_score`, `min_score`
-- `direction` (up/down/mixed)
-- `plot_file` (若生成器官级覆盖图)
-
-**汇总表列：** 每个 variant×organ 一行；若任一轨道显著则 `is_significant_any=True`，并附 `tracks_significant` 列 (逗号分隔轨道名)。
-
----
-
-## 3. 使用示例
+## 使用示例 Case of using
 
 ```bash
 python alpha_variant_scan.py \
@@ -60,3 +18,48 @@ python alpha_variant_scan.py \
   --output-table results.csv --output-dir plots \
   --plot-non-sig --scan-all-tracks
 ```
+---
+
+## 1. Parameters（CLI）
+
+| Parameter            | Type/Default                             | Meaning                                              | Notes               |
+| -------------------  | ---------------------------------------- | ---------------------------------------------------- | ------------------- |
+| `--variants`         | path                                     | Variant table TSV/CSV/VCF. Must contain CHROM, POS (1-based), REF, ALT | Required            |
+| `--organs`           | list                                     | UBERON codes; default uses the built-in example list | Multiple selection  |
+| `--threshold`        | float=0.5                                | Determines significance: ALT/REF−1 > threshold. Lower values are more sensitive but increase false positives | Lower values are more sensitive but increase false positives |
+| `--min-length`       | int=1000                                  | Segment length threshold (bp, calculated after window) | Denoising           |
+| `--merge-distance`   | int=300                                   | Maximum merge distance for adjacent candidate segments (bp) | Fills small gaps    |
+| `--window-size`      | int=100                                   | Sliding window size (bp)                             | Smoothness vs Resolution |
+| `--scan-span`        | int=50000                                 | Number of bp to scan on either side of the variant center | Scan range          |
+| `--plot-non-sig`     | flag                                     | Plot even when no significant results are found       | Default does not plot |
+| `--scan-all-tracks`  | flag                                     | Scan all tracks (default summarizes only, scans all when this flag is present; keeps backward compatibility) | Recommended to enable |
+| `--epsilon`          | float=1e-8                                | Adds a small value to REF to avoid division by zero   | Numerical stability |
+| `--output-table`     | str=alphagenome_scan_results.csv         | Summary table path (extension determines format)      | Supports csv/tsv/xlsx |
+| `--output-dir`       | str=alphagenome_scan_plots               | Output directory for plots                           | Automatically created |
+| `--api-key`          | str                                      | AlphaGenome API key                                  | Optional, auto retrieved from env/colab |
+| `--gtf`              | str=GENCODE v46 feather                  | Annotation file                                       | Customizable        |
+| `--chrom-col` etc.   | str                                      | Input column name mapping                             | Compatible with multiple source files |
+
+## 2. Output
+
+The outcome is a **detailed table** (`--output-table`) and a **variant×organ summary table**（`_variant_organ_summary.*`）。
+
+**detailed table columns：**
+
+- `chrom`, `pos`, `ref`, `alt`
+- `ontology` (UBERON)
+- `track_name`
+- `is_significant` (bool)
+- `n_regions` (significant regions)
+- `region_index` (0..n-1; no significant region: -1)
+- `rel_start_bp`, `rel_end_bp` (relative position, bp)
+- `abs_start_bp`, `abs_end_bp` (hg38 coodinate; pos + rel)
+- `mean_score`, `max_score`, `min_score`
+- `direction` (up/down/mixed)
+- `plot_file` (if plot generated)
+
+**variant×organ summary table columns：** every row showed variant×organ results; If any track is significant then `is_significant_any=True`，you can check `tracks_significant` col to see the significant tracks。
+
+---
+
+
