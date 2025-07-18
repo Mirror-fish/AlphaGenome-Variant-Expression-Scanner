@@ -89,7 +89,7 @@ The outcome is a **detailed table** (`--output-table`) and a **variant×organ su
 ## 工具原理 How it works
 This tool is built on top of AlphaGenome, with additional scanning methods organized to process the prediction results. We mainly use a sliding window (`--window-size`, default 100bp) to scan the two predicted tracks for change ratios. After filtering out noise from the significant change signals (increase/decrease > `--threshold`), we evaluate whether the variant significantly alters expression in a specific UBERON organ by checking if the significant change signal region exceeds `--min-length`.
 
-
+(Here should be a visualization, still working on it...)
 
 ---
 ## 未来可能的改进方面 Future directions:
