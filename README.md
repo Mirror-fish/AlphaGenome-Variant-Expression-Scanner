@@ -3,7 +3,7 @@ This is an established tool using Alphagenome to screen the possible effects of 
 
 ## 摘要  Summary 
 
-**中文:** 输入一个含变异列表的文件 (TSV/CSV/VCF)。对指定 UBERON 器官调用 AlphaGenome DNA 模型的 RNA 预测，在变异中心 ±`scan_span` bp 区域内，用 `window_size` 滑窗计算 ALT/REF−1；根据 `threshold`、`min_length`、`merge_distance` 判定显著表达改变区段；输出结果汇总表 + (可选) 图像。
+**中文:** 输入一个含变异列表的文件 (TSV/CSV/VCF)。对指定 UBERON 组织调用 AlphaGenome DNA 模型的 RNA 预测，在变异中心 ±`scan_span` bp 区域内，用 `window_size` 滑窗计算 ALT/REF−1；根据 `threshold`、`min_length`、`merge_distance` 判定显著表达改变区段；输出结果汇总表 + (可选) 图像。
 
 **English:** Input a file containing a list of variants (TSV/CSV/VCF). Perform RNA prediction using the AlphaGenome DNA model for the specified UBERON organ, within the ±`scan_span` bp region around the variant center. Use a sliding window of size `window_size` to calculate ALT/REF−1. Significant expression change segments are determined based on `threshold`, `min_length`, and `merge_distance`. The results are output in a summary table + (optional) images.
 
@@ -16,8 +16,21 @@ python alpha_variant_scan.py \
   --threshold 0.5 --min-length 1000 --merge-distance 300 \
   --window-size 100 --scan-span 50000 \
   --output-table results.csv --output-dir plots \
+  --api-key your_API_key \
   --plot-non-sig --scan-all-tracks
 ```
+
+## 开始之前的调试 Before you start
+
+**Install Package:** 
+```
+pip install alphagenome
+```
+
+**API key:** Please see [Alphagenome's Github](https://github.com/google-deepmind/alphagenome?tab=readme-ov-file) before you start, you can get the API key there.
+
+**UBERON organs:** We have set UBERON:0000992 (ovary),**UBERON:0002371 (bone marrow, NOTICE: no tracks avaliable)**, UBERON:0000948 (heart), UBERON:0000955 (brain), UBERON:0001264 (pancreas), UBERON:0001134 (skeletal muscle tissue); Find more on [Ontology Search](https://www.ebi.ac.uk/ols4/)
+
 ---
 
 ## 1. Parameters（CLI）
@@ -36,11 +49,23 @@ python alpha_variant_scan.py \
 | `--epsilon`          | float=1e-8                                | Adds a small value to REF to avoid division by zero   | Numerical stability |
 | `--output-table`     | str=alphagenome_scan_results.csv         | Summary table path (extension determines format)      | Supports csv/tsv/xlsx |
 | `--output-dir`       | str=alphagenome_scan_plots               | Output directory for plots                           | Automatically created |
-| `--api-key`          | str                                      | AlphaGenome API key                                  | Optional, auto retrieved from env/colab |
+| `--api-key`          | str                                      | AlphaGenome API key                                  | see [Alphagenome API](https://deepmind.google.com/science/alphagenome/) |
 | `--gtf`              | str=GENCODE v46 feather                  | Annotation file                                       | Customizable        |
 | `--chrom-col` etc.   | str                                      | Input column name mapping                             | Compatible with multiple source files |
 
-## 2. Output
+## 2. Input
+
+Input file format can be TSV/CSV/VCF. You can select which column to use in `--chrom-col`, `--pos-col`, `--ref-col`,`--alt-col`.
+
+We recommend using TSV:
+```
+CHROM	POS	REF	ALT
+chr1	908963	A	ATCG
+chr1	49084104	GAGTC A
+...
+```
+
+## 3. Output
 
 The outcome is a **detailed table** (`--output-table`) and a **variant×organ summary table**（`_variant_organ_summary.*`）。
 
@@ -61,5 +86,18 @@ The outcome is a **detailed table** (`--output-table`) and a **variant×organ su
 **variant×organ summary table columns：** every row showed variant×organ results; If any track is significant then `is_significant_any=True`，you can check `tracks_significant` col to see the significant tracks。
 
 ---
+## 工具原理 How it works
+This tool is built on top of AlphaGenome, with additional scanning methods organized to process the prediction results. We mainly use a sliding window (`--window-size`, default 100bp) to scan the two predicted tracks for change ratios. After filtering out noise from the significant change signals (increase/decrease > `--threshold`), we evaluate whether the variant significantly alters expression in a specific UBERON organ by checking if the significant change signal region exceeds `--min-length`.
 
+
+
+---
+## 未来可能的改进方面 Future directions:
+The parameters are **not validated** at this time, so we strongly suggest you to test a few rounds before using it on large dataset. We are now working on the literature review for the best parameters.
+
+Right now this tool is only applied on RNA-SEQ data prediction, we'll add more datatypes once we tested them.
+
+We corrected the coordinated shift caused by large variant alternation (see [Alphagenome forum post](https://www.alphagenomecommunity.com/t/coordiate-change-when-predicting-long-variants/445)) with deletion on the reference track, so far this method will not affect prediction. We'll follow AlphaGenome's fix in future.
+
+If there's any idea or suggestion, please contact Jingyu (zengjingyu@genomics.cn)
 
