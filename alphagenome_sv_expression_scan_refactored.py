@@ -2,13 +2,7 @@
 """
 alpha_variant_scan.py — Configurable & Stable AlphaGenome Variant Expression Scanner
 
-增强点：
-  * 参数化阈值、长度、滑窗、扫描范围、绘图、轨道策略。
-  * 修复原脚本缩进、尾段、exit、SNV length_alter、越界、除零问题。
-  * 输出详细结果表 + variant×organ 汇总表。
-  * 可选在无显著时仍绘图。
-
-依赖: alphagenome, pandas, numpy, matplotlib.
+need: alphagenome, pandas, numpy, matplotlib.
 """
 
 from __future__ import annotations
@@ -125,7 +119,7 @@ def get_dna_model(api_key: Optional[str] = None):
         except Exception as e:
         # If not Colab
           print(f"Error getting API key from Colab: {e}")
-          api_key = "AIzaSyCG1uQApjehaIh4gxykQ7iTE2Li5k1EEwM"  # API key
+          api_key = ""  # Insert your API key here if not working
     return dna_client.create(api_key)
 
 # ------------------------------------------------------------------
