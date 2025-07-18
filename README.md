@@ -10,7 +10,7 @@ This is an established tool using Alphagenome to screen the possible effects of 
 ## 使用示例 Case of using
 
 ```bash
-python alpha_variant_scan.py \
+python alphagenome_sv_expression_scan.py \
   --variants SVs_hg38.txt \
   --organs UBERON:0000992 UBERON:0000955 \
   --threshold 0.5 --min-length 1000 --merge-distance 300 \
