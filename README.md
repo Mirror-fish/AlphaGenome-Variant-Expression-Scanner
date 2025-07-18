@@ -1,4 +1,4 @@
-# Alphagenome----Variant-Effect-Screening-Method
+# AlphaGenome Variant Expression Scanner
 This is an established tool using Alphagenome to screen the possible effects of variants on expression patterns.
 
 ## 摘要  Summary 
