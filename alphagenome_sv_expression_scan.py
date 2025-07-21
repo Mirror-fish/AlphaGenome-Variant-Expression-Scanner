@@ -306,7 +306,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         
             # track names
             try:
-                track_names = vout.reference.rna_seq.metadata.name
+                track_names = vout.reference.rna_seq.metadata.name + ': ' + vout.reference.rna_seq.metadata.strand
             except Exception:
                 track_names = [f"track_{i}" for i in range(n_tracks)]
         
