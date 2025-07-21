@@ -95,7 +95,8 @@ We mainly use a sliding window (`--window-size`, default 100bp) to scan the two 
 
 After filtering out noise from the significant change signals (increase/decrease > `--threshold`), we evaluate whether the variant significantly alters expression in a specific UBERON organ by checking if the significant change signal region exceeds `--min-length`.
 
-<img width="3784" height="1225" alt="image" src="https://github.com/user-attachments/assets/68e55d0f-2afd-4900-9cc3-cded9600ca75" />
+<img width="3817" height="1257" alt="image" src="https://github.com/user-attachments/assets/5d4522d7-3110-4248-aa50-f7ecc98c86ba" />
+
 
 ---
 ## 未来可能的改进方面 Future directions:
