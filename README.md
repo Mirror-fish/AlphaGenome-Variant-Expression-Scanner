@@ -13,8 +13,8 @@ This is an established tool using Alphagenome to screen the possible effects of 
 python alphagenome_sv_expression_scan.py \
   --variants SVs_hg38.txt \
   --organs UBERON:0000992 UBERON:0000955 \
-  --threshold 0.5 --min-length 1000 --merge-distance 300 \
-  --window-size 100 --scan-span 50000 \
+  --threshold 0.2 --min-length 2000 --merge-distance 300 \
+  --window-size 100 --scan-span 100000 \
   --output-table results.csv --output-dir plots \
   --api-key your_API_key \
   --plot-non-sig --scan-all-tracks
