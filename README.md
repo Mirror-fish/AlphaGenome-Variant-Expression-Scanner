@@ -91,6 +91,7 @@ This tool is built on top of AlphaGenome, with additional scanning methods organ
 
 <img width="3832" height="1876" alt="image" src="https://github.com/user-attachments/assets/081b671a-3683-459b-a585-eeb7ace3a005" />
 
+<img width="3784" height="1225" alt="image" src="https://github.com/user-attachments/assets/68e55d0f-2afd-4900-9cc3-cded9600ca75" />
 
 ---
 ## 未来可能的改进方面 Future directions:
